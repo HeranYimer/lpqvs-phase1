@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>Supervisor Dashboard</title>
+
+<link rel="stylesheet" href="dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<header>
+<h2>LPQVS - ሱፐርቫይዘር ዳሽቦርድ</h2>
+<button onclick="logout()">ውጣ</button>
+</header>
+
+<div class="container">
+
+<aside class="sidebar">
+<ul>
+
+<li><a href="../applications/submitted-application.html">📋 ማመልከቻ ግምገማ</a></li>
+
+<!-- ✅ Reports now functional -->
+<li><a href="../reports/reports.html">📊 ሪፖርቶች</a></li>
+
+</ul>
+</aside>
+
+<main class="content">
+
+<h3>የግምገማ ሁኔታ</h3>
+
+<button id="refreshBtn">🔄 Refresh</button>
+
+<div class="cards">
+
+<div class="card">
+<h4>አጠቃላይ</h4>
+<p id="total">0</p>
+</div>
+
+<div class="card">
+<h4>በመጠባበቅ ላይ</h4>
+<p id="pending">0</p>
+</div>
+
+<div class="card">
+<h4>የተፈቀዱ</h4>
+<p id="approved">0</p>
+</div>
+
+<div class="card">
+<h4>የተከለከሉ</h4>
+<p id="rejected">0</p>
+</div>
+
+</div>
+
+<h3>ያለፉ 7 ቀናት</h3>
+
+<table border="1">
+<thead>
+<tr>
+<th>ቀን</th>
+<th>ብዛት</th>
+</tr>
+</thead>
+
+<tbody id="dailyTable"></tbody>
+</table>
+
+<h3>Application Trends</h3>
+
+<select id="chartType">
+  <option value="bar">Bar Chart</option>
+  <option value="line">Line Chart</option>
+</select>
+
+<canvas id="dailyChart"></canvas>
+
+</main>
+
+</div>
+
+<script type="module" src="../js/supervisor-dashboard.js"></script>
+
+<script>
+function logout(){
+  window.location.href="../login.html";
+}
+</script>
+
+</body>
+</html>

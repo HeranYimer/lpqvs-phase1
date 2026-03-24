@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>የመሬት ምርመራ ስርዓት - ኦፊሰር ዳሽቦርድ</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+<header>
+<h2>LPQVS - ኦፊሰር ዳሽቦርድ</h2>
+<button onclick="logout()">ውጣ</button>
+</header>
+
+<div class="container">
+
+<aside class="sidebar">
+<ul>
+
+<li>
+<a href="../applications/new-application.html">
+📄 አዲስ ማመልከቻ
+</a>
+</li>
+
+<li>
+<a href="../applications/submitted-application.html">
+📂 የኔ ማመልከቻዎች
+</a>
+</li>
+
+<li>
+<a href="#">
+📤 ሰነዶች መጫን
+</a>
+</li>
+
+<li>
+<a href="#">
+🔍 ሁኔታ መመልከት
+</a>
+</li>
+
+</ul>
+</aside>
+
+<main class="content">
+
+<h3>የዛሬ ስራ</h3>
+
+<div class="cards">
+
+<div class="card">
+<h4>የሚጠባበቁ ማመልከቻዎች</h4>
+<p>12</p>
+</div>
+
+<div class="card">
+<h4>ዛሬ የተሰሩ</h4>
+<p>5</p>
+</div>
+
+<div class="card">
+<h4>የወር አፈፃፀም</h4>
+<p>48</p>
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script>
+function logout(){
+window.location.href="../login.html";
+}
+</script>
+
+</body>
+</html>

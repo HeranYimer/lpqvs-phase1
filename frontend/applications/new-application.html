@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>አዲስ ማመልከቻ</title>
+<link rel="stylesheet" href="../dashboards/dashboard.css">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header>
+  <h2>አዲስ ማመልከቻ</h2>
+  <button onclick="logout()">ውጣ</button>
+</header>
+<a href="../dashboards/officer-dashboard.html">← Back</a>
+
+<div class="content">
+  <form id="applicationForm" enctype="multipart/form-data">
+<div class="firstsection">
+    <label>ሙሉ ስም</label>
+    <input type="text" id="name" name="name" required>
+
+    <label>ፋይዳ መለያ</label>
+    <input type="text" id="fayida_id" name="fayida_id">
+
+    <label>ቀበሌ መለያ</label>
+    <input type="text" id="kebele_id" name="kebele_id" required>
+
+    <label>አድራሻ</label>
+    <input type="text" id="address" name="address" required>
+
+    <label>የጋብቻ ሁኔታ</label>
+    <select id="marital_status" name="marital_status">
+      <option value="single">ያልተጋባ</option>
+      <option value="married">የተጋባ</option>
+      <option value="divorced">የተፋታ</option>
+      <option value="widowed">መብት ያጣ</option>
+    </select>
+</div>
+<div class="secondsection">
+    <h3>ሰነዶች መጫን</h3>
+    <label>ፊርማ ፎቶ</label>
+    <input type="file" id="signature" name="signature">
+
+    <label>ፋይዳ መለያ ቅጂ</label>
+    <input type="file" id="fayida_doc" name="fayida_doc">
+
+    <label>ቀበሌ መለያ ቅጂ</label>
+    <input type="file" id="kebele_doc" name="kebele_doc">
+
+    <button type="submit">ማመልከቻ አስገባ</button>
+</div>
+  </form>
+</div>
+
+<script type="module" src="../js/application.js"></script>
+<script>
+function logout(){
+  window.location.href="../login.html";
+}
+</script>
+
+</body>
+</html>

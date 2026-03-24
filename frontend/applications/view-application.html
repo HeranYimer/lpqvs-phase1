@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>ማመልከቻ ዝርዝር</title>
+</head>
+
+<body>
+
+<a href="./submitted-application.html">← Back</a>
+
+<h2>ማመልከቻ ዝርዝር</h2>
+
+<!-- Application info -->
+<div id="details"></div>
+
+<h3>የተጫኑ ሰነዶች</h3>
+<div id="docs"></div>
+
+<h3>Verification Checklist</h3>
+
+<!-- Officer editable -->
+<div id="checklistSection">
+
+  <div>
+    <label>Land</label>
+    <select id="land_status">
+      <option value="">Select</option>
+      <option value="verified">Verified</option>
+      <option value="not_verified">Not Verified</option>
+    </select>
+    <input type="text" id="land_comment" placeholder="Comment">
+  </div>
+
+  <div>
+    <label>Marital</label>
+    <select id="marital_status_check">
+      <option value="">Select</option>
+      <option value="verified">Verified</option>
+      <option value="not_verified">Not Verified</option>
+    </select>
+    <input type="text" id="marital_comment" placeholder="Comment">
+  </div>
+
+  <div>
+    <label>Kebele</label>
+    <select id="kebele_status">
+      <option value="">Select</option>
+      <option value="verified">Verified</option>
+      <option value="not_verified">Not Verified</option>
+    </select>
+    <input type="text" id="kebele_comment" placeholder="Comment">
+  </div>
+
+  <div>
+    <label>Fayida</label>
+    <select id="fayida_status">
+      <option value="">Select</option>
+      <option value="verified">Verified</option>
+      <option value="not_verified">Not Verified</option>
+    </select>
+    <input type="text" id="fayida_comment" placeholder="Comment">
+  </div>
+
+  <br>
+  <button id="saveVerification">Save Verification</button>
+
+</div>
+
+<!-- Supervisor read-only -->
+<div id="checklistView" style="display:none;"></div>
+
+<!-- Decision section -->
+<div id="decisionSection">
+
+  <h3>Final Decision</h3>
+
+  <textarea id="decisionComment" placeholder="አስተያየት"></textarea>
+
+  <br><br>
+  <button id="approveBtn">✅ Approve</button>
+  <button id="rejectBtn">❌ Reject</button>
+
+</div>
+
+<script type="module" src="../js/view-application.js"></script>
+
+</body>
+</html>

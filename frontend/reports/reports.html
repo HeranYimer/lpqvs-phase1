@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>Reports</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.spinner {
+  display: none;
+  border: 5px solid #ccc;
+  border-top: 5px solid #333;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+</style>
+
+</head>
+
+<body>
+<a href="../dashboards/supervisor-dashboard.html" id="backBtn">← Back</a>
+
+<h2>Reports</h2>
+
+<label>From:</label>
+<input type="date" id="fromDate">
+
+<label>To:</label>
+<input type="date" id="toDate">
+
+<button id="filterBtn">Filter</button>
+<button id="exportBtn">Export CSV</button>
+
+<div class="spinner" id="spinner"></div>
+
+<canvas id="reportChart"></canvas>
+
+<script type="module" src="../js/reports.js"></script>
+
+</body>
+</html>

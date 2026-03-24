@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+<header>
+<h2>LPQVS - አስተዳዳሪ ዳሽቦርድ</h2>
+<button onclick="logout()">ውጣ</button>
+</header>
+
+<div class="container">
+
+<aside class="sidebar">
+<ul>
+
+<li>👥 ተጠቃሚ አስተዳደር</li>
+<li>📑 ሎጎች</li>
+<li>💾 ማከማቻ ሁኔታ</li>
+<li>⚙️ ስርዓት ቅንብር</li>
+
+</ul>
+</aside>
+
+<main class="content">
+
+<h3>የስርዓት ሁኔታ</h3>
+
+<div class="cards">
+
+<div class="card">
+<h4>አጠቃላይ ተጠቃሚዎች</h4>
+<p>15</p>
+</div>
+
+<div class="card">
+<h4>የዛሬ ግባቶች</h4>
+<p>23</p>
+</div>
+
+<div class="card">
+<h4>Storage</h4>
+<p>65%</p>
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script>
+function logout(){
+window.location.href="../login.html";
+}
+</script>
+
+</body>
+</html>
