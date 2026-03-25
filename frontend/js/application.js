@@ -1,5 +1,30 @@
 const form = document.getElementById("applicationForm");
 
+// Message box (must exist in HTML)
+const messageBox = document.getElementById("messageBox");
+
+// ================= MESSAGE HANDLER =================
+function showMessage(message, type = "success") {
+  messageBox.innerText = message;
+
+  messageBox.style.padding = "10px";
+  messageBox.style.borderRadius = "5px";
+  messageBox.style.marginBottom = "15px";
+  messageBox.style.fontWeight = "bold";
+
+  if (type === "error") {
+    messageBox.style.color = "#721c24";
+    messageBox.style.backgroundColor = "#f8d7da";
+    messageBox.style.border = "1px solid #f5c6cb";
+  } else {
+    messageBox.style.color = "#155724";
+    messageBox.style.backgroundColor = "#d4edda";
+    messageBox.style.border = "1px solid #c3e6cb";
+  }
+
+}
+
+// ================= FORM SUBMIT =================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -10,22 +35,24 @@ form.addEventListener("submit", async (e) => {
 
   for (let id of fileInputs) {
     const input = document.getElementById(id);
+
     if (input && input.files.length > 0) {
       const file = input.files[0];
+
       if (file.size > maxSize) {
-        alert("ፋይሉ ከ 5MB በላይ መሆን አይችልም");
-        input.value = ""; // clear only that file
-        return; // stop submission
+        showMessage("ፋይሉ ከ 5MB በላይ መሆን አይችልም", "error");
+        input.value = "";
+        return;
       }
+
       if (!allowedTypes.includes(file.type)) {
-        alert("Invalid file type. Only JPEG, PNG, PDF allowed");
-        input.value = ""; // clear only that file
-        return; // stop submission
+        showMessage("የፋይሉ አይነት ትክክል አይደለም። JPEG, PNG ወይም PDF ብቻ ይፈቀዳሉ", "error");
+        input.value = "";
+        return;
       }
     }
   }
 
-  // Submit the form if files are valid
   const formData = new FormData(form);
 
   try {
@@ -35,17 +62,24 @@ form.addEventListener("submit", async (e) => {
     });
 
     let data = {};
-    try { data = await res.json(); } catch { data = { message: "Upload error" }; }
-
-    if (res.ok) {
-      alert("ማመልከቻ ተመዝግቧል");
-      form.reset(); // reset only on success
-    } else {
-      alert(data.message || "Upload failed");
+    try {
+      data = await res.json();
+    } catch {
+      data = { message: "የሰርቨር ስህተት ተከስቷል" };
     }
+
+   if (res.ok) {
+  showMessage(data.message || "ማመልከቻ በተሳካ ሁኔታ ተመዝግቧል", "success");
+  form.reset();
+} else {
+  showMessage(data.message || "ማመልከቻ መላክ አልተሳካም", "error");
+
+  // ❗ IMPORTANT: prevent any unintended reset
+  e.target.reset = function () {};
+}
 
   } catch (error) {
     console.error(error);
-    alert("Server connection error");
+    showMessage("ከሰርቨር ጋር መገናኘት አልተቻለም", "error");
   }
 });

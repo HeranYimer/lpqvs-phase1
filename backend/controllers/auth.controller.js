@@ -10,7 +10,7 @@ export const login = async (req, res) => {
     const user = await findUserByUsername(username);
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ message: "ተጠቃሚ አልተገኘም" });
     }
 
     const validPassword = await comparePassword(
@@ -19,7 +19,7 @@ export const login = async (req, res) => {
     );
 
     if (!validPassword) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({ message: "የይለፍ ቃል ትክክል አይደለም" });
     }
 
     req.session.user = {
@@ -29,7 +29,7 @@ export const login = async (req, res) => {
     };
 
     res.json({
-      message: "Login successful",
+      message: "በተሳካ ሁኔታ ገብተዋል",
       role: user.role
     });
 

@@ -84,15 +84,16 @@ router.post("/applications/:id/verify", (req, res) => {
 // ================= DECISION =================
 router.post("/applications/:id/decision", (req, res) => {
   const role = req.session.user?.role;
+  const userId = req.session.user?.id; // ✅ get user id
   const applicationId = req.params.id;
   const { decision, comment } = req.body;
 
   if (role !== "Supervisor") {
-    return res.status(403).json({ message: "Unauthorized" });
+    return res.status(403).json({ message: "አልተፈቀደም" });
   }
 
   if (!decision || !["Approved", "Rejected"].includes(decision)) {
-    return res.status(400).json({ message: "Invalid decision" });
+    return res.status(400).json({ message: "የተሳሳተ ውሳኔ" });
   }
 
   db.query(
@@ -103,9 +104,22 @@ router.post("/applications/:id/decision", (req, res) => {
      WHERE id = ?`,
     [decision, comment || null, applicationId],
     (err) => {
-      if (err) return res.status(500).json({ message: "DB error" });
+      if (err) return res.status(500).json({ message: "የዳታቤዝ ስህተት" });
 
-      res.json({ message: "Decision saved", status: decision });
+      // ================= AUDIT LOG (NEW) =================
+      db.query(
+        "INSERT INTO audit_logs (action, user_id) VALUES (?, ?)",
+        [`Application ${decision} (ID: ${applicationId})`, userId],
+        (logErr) => {
+          if (logErr) console.error("Audit log error:", logErr);
+        }
+      );
+      // ==================================================
+
+      res.json({
+        message: "ውሳኔ በተሳካ ሁኔታ ተመዝግቧል።",
+        status: decision
+      });
     }
   );
 });
@@ -126,7 +140,8 @@ router.get("/applications/:id", (req, res) => {
       applicants.fayida_id,
       applicants.kebele_id,
       applicants.address,
-      applicants.marital_status
+      applicants.marital_status,
+applicants.date_of_birth
      FROM applications
      JOIN applicants ON applications.applicant_id = applicants.id
      WHERE applications.id = ?`,

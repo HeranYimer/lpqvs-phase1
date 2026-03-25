@@ -1,80 +1,134 @@
 import db from "../config/db.js";
 
-export const createApplication = (req,res)=>{
+export const createApplication = (req, res) => {
 
-const {
-name,
-fayida_id,
-kebele_id,
-address,
-marital_status
-} = req.body;
+  const {
+    name,
+    fayida_id,
+    kebele_id,
+    address,
+    marital_status,
+    date_of_birth
+  } = req.body;
 
-const files = req.files;
+  const files = req.files;
 
-db.query(
-"INSERT INTO applicants (name,fayida_id,kebele_id,address,marital_status) VALUES (?,?,?,?,?)",
-[name,fayida_id,kebele_id,address,marital_status],
-(err,result)=>{
+  // ================= DUPLICATION CHECK =================
+  // Step 1: If Fayida ID exists → enforce uniqueness
+  if (fayida_id) {
 
-if(err) return res.status(500).json(err);
+    db.query(
+      "SELECT * FROM applicants WHERE fayida_id = ?",
+      [fayida_id],
+      (err, results) => {
 
-const applicantId = result.insertId;
+        if (err) return res.status(500).json(err);
 
-db.query(
-"INSERT INTO applications (applicant_id,status) VALUES (?,?)",
-[applicantId,"Pending"],
-(err,result)=>{
+        if (results.length > 0) {
+          return res.status(400).json({
+            message: "ይህ Fayida ID ቀድሞ ተመዝግቧል። ማመልከቻው ተከልክሏል።"
+          });
+        }
 
-if(err) return res.status(500).json(err);
+        // proceed to kebele check after FIN validation
+        checkKebeleAndInsert();
+      }
+    );
 
-const applicationId = result.insertId;
+  } else {
+    // If no Fayida ID → use fallback uniqueness rule
+    checkKebeleAndInsert();
+  }
 
-if(files){
+  // ================= KELEBELE + DOB CHECK =================
+  function checkKebeleAndInsert() {
 
-const docs = [];
+    db.query(
+      `SELECT * FROM applicants 
+       WHERE name = ? 
+       AND kebele_id = ? 
+       AND date_of_birth = ?`,
+      [name, kebele_id, date_of_birth],
+      (err, results) => {
 
-if(files.signature){
-docs.push([
-applicationId,
-"signature",
-files.signature[0].filename
-]);
-}
+        if (err) return res.status(500).json(err);
 
-if(files.fayida_doc){
-docs.push([
-applicationId,
-"fayida_id",
-files.fayida_doc[0].filename
-]);
-}
+        if (results.length > 0) {
+          return res.status(400).json({
+            message: "ተመሳሳይ አመልካች (ስም + የትውልድ ቀን + ቀበሌ መለያ) ቀድሞ ተመዝግቧል። ማመልከቻው ተከልክሏል።"
+          });
+        }
 
-if(files.kebele_doc){
-docs.push([
-applicationId,
-"kebele_id",
-files.kebele_doc[0].filename
-]);
-}
+        // If no duplicates → proceed to insert
+        insertApplication();
+      }
+    );
+  }
 
-if(docs.length > 0){
+  // ================= INSERT FLOW =================
+  function insertApplication() {
 
-db.query(
-"INSERT INTO documents (application_id,doc_type,file_path) VALUES ?",
-[docs]
-);
+    db.query(
+      "INSERT INTO applicants (name,fayida_id,kebele_id,address,marital_status,date_of_birth) VALUES (?,?,?,?,?,?)",
+      [name, fayida_id, kebele_id, address, marital_status, date_of_birth],
+      (err, result) => {
 
-}
+        if (err) return res.status(500).json(err);
 
-}
+        const applicantId = result.insertId;
 
-res.json({
-message:"Application submitted successfully"
-});
+        db.query(
+          "INSERT INTO applications (applicant_id,status) VALUES (?,?)",
+          [applicantId, "Pending"],
+          (err, result) => {
 
-});
+            if (err) return res.status(500).json(err);
 
-});
+            const applicationId = result.insertId;
 
+            if (files) {
+
+              const docs = [];
+
+              if (files.signature) {
+                docs.push([
+                  applicationId,
+                  "signature",
+                  files.signature[0].filename
+                ]);
+              }
+
+              if (files.fayida_doc) {
+                docs.push([
+                  applicationId,
+                  "fayida_id",
+                  files.fayida_doc[0].filename
+                ]);
+              }
+
+              if (files.kebele_doc) {
+                docs.push([
+                  applicationId,
+                  "kebele_id",
+                  files.kebele_doc[0].filename
+                ]);
+              }
+
+              if (docs.length > 0) {
+                db.query(
+                  "INSERT INTO documents (application_id,doc_type,file_path) VALUES ?",
+                  [docs]
+                );
+              }
+            }
+
+            res.json({
+              message: "ማመልከቻ በተሳካ ሁኔታ ተመዝግቧል።"
+            });
+
+          }
+        );
+      }
+    );
+  }
 };
