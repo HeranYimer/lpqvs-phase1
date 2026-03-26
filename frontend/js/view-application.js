@@ -1,3 +1,42 @@
+// ✅ MESSAGE FUNCTION (ADDED)
+function showMessage(message, type = "success") {
+  const messageBox = document.getElementById("messageBox");
+
+  messageBox.innerText = message;
+
+  // ✅ MAKE IT FLOAT (IMPORTANT PART)
+  messageBox.style.position = "fixed";
+  messageBox.style.top = "20px";
+  messageBox.style.right = "20px";
+  messageBox.style.zIndex = "1000";
+  messageBox.style.minWidth = "250px";
+
+  messageBox.style.padding = "10px";
+  messageBox.style.borderRadius = "5px";
+  messageBox.style.fontWeight = "bold";
+
+  messageBox.style.display = "block";
+
+  if (type === "error") {
+    messageBox.style.color = "#721c24";
+    messageBox.style.backgroundColor = "#f8d7da";
+    messageBox.style.border = "1px solid #f5c6cb";
+  } else if (type === "warning") {
+    messageBox.style.color = "#856404";
+    messageBox.style.backgroundColor = "#fff3cd";
+    messageBox.style.border = "1px solid #ffeeba";
+  } else {
+    messageBox.style.color = "#155724";
+    messageBox.style.backgroundColor = "#d4edda";
+    messageBox.style.border = "1px solid #c3e6cb";
+  }
+
+  // auto hide
+  setTimeout(() => {
+    messageBox.style.display = "none";
+  }, 3000);
+}
+
 const params = new URLSearchParams(window.location.search);
 const applicationId = params.get("id");
 const role = (localStorage.getItem("role") || "").toLowerCase();
@@ -109,7 +148,7 @@ document.getElementById("saveVerification").addEventListener("click", async () =
 
   for (let c of checks) {
     if (!c.status) {
-      alert("Please select all checklist items");
+      showMessage("Please complete all verification fields.", "warning");
       return;
     }
   }
@@ -126,15 +165,15 @@ document.getElementById("saveVerification").addEventListener("click", async () =
     const data = await res.json();
 
     if (res.ok) {
-      alert(`Verification saved. Result: ${data.eligibility}`);
-      loadVerificationData(); // refresh view
+      showMessage(`Verification saved successfully. Result: ${data.eligibility}`, "success");
+      loadVerificationData();
     } else {
-      alert(data.message || "Error saving verification");
+      showMessage(data.message || "Failed to save verification.", "error");
     }
 
   } catch (err) {
     console.error(err);
-    alert("Server error");
+    showMessage("Unable to connect to server. Please try again.", "error");
   }
 
 });
@@ -161,13 +200,13 @@ async function makeDecision(decision) {
     const data = await res.json();
 
     if (res.ok) {
-      alert("Decision: " + data.status);
+      showMessage(`Decision recorded: ${data.status}`, "success");
       await loadApplicationDetails();
     }
 
   } catch (err) {
     console.error(err);
-    alert("Server error");
+    showMessage("Failed to submit decision. Try again.", "error");
   }
 }
 
@@ -189,7 +228,6 @@ async function loadVerificationData() {
 
     if (!data || data.length === 0) return;
 
-    // ✅ SUPERVISOR → CLEAN READ-ONLY VIEW
     if (role === "supervisor") {
 
       let html = "";
@@ -208,7 +246,6 @@ async function loadVerificationData() {
       return;
     }
 
-    // ✅ OFFICER → FILL FORM
     data.forEach(item => {
       const statusValue = item.verified ? "verified" : "not_verified";
 

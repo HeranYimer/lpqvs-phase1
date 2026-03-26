@@ -298,4 +298,40 @@ router.get("/reports/daily", (req, res) => {
   );
 });
 
+// ==========================
+// Dashboard stats
+// Example
+router.get("/dashboard-stats", async (req, res) => {
+  try {
+    const [[{ total }]] = await db.query("SELECT COUNT(*) as total FROM users");
+    const [[{ today }]] = await db.query("SELECT COUNT(*) as today FROM applications WHERE DATE(created_at)=CURDATE()");
+    res.json({ totalUsers: total, todayEntries: today });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Storage usage
+// router.get("/storage-usage", async (req, res) => {
+//   try {
+//     // Dummy example: calculate used DB size or file folder usage
+//     // You can implement real storage calculation if needed
+//     res.json({ usage: "65%" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+// // Audit logs (admin only)
+// router.get("/audit-logs", async (req, res) => {
+//   try {
+//     const [rows] = await db.query("SELECT username, action, status, created_at FROM audit_logs ORDER BY created_at DESC");
+//     res.json(rows);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 export default router;

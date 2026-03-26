@@ -7,21 +7,37 @@ const messageBox = document.getElementById("messageBox");
 function showMessage(message, type = "success") {
   messageBox.innerText = message;
 
+  // ✅ FLOATING POSITION (same as other page)
+  messageBox.style.position = "fixed";
+  messageBox.style.top = "20px";
+  messageBox.style.right = "20px";
+  messageBox.style.zIndex = "1000";
+  messageBox.style.minWidth = "250px";
+
   messageBox.style.padding = "10px";
   messageBox.style.borderRadius = "5px";
-  messageBox.style.marginBottom = "15px";
   messageBox.style.fontWeight = "bold";
+
+  messageBox.style.display = "block";
 
   if (type === "error") {
     messageBox.style.color = "#721c24";
     messageBox.style.backgroundColor = "#f8d7da";
     messageBox.style.border = "1px solid #f5c6cb";
+  } else if (type === "warning") {
+    messageBox.style.color = "#856404";
+    messageBox.style.backgroundColor = "#fff3cd";
+    messageBox.style.border = "1px solid #ffeeba";
   } else {
     messageBox.style.color = "#155724";
     messageBox.style.backgroundColor = "#d4edda";
     messageBox.style.border = "1px solid #c3e6cb";
   }
 
+  // ✅ AUTO DISAPPEAR
+  setTimeout(() => {
+    messageBox.style.display = "none";
+  }, 3000);
 }
 
 // ================= FORM SUBMIT =================

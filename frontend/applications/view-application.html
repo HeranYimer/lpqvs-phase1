@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>ማመልከቻ ዝርዝር</title>
+<link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
@@ -10,14 +11,15 @@
 <a href="./submitted-application.html">← Back</a>
 
 <h2>ማመልከቻ ዝርዝር</h2>
-
+<!-- ✅ ADDED MESSAGE BOX -->
+<div id="messageBox" class="message-box"></div>
 <!-- Application info -->
 <div id="details"></div>
 
 <h3>የተጫኑ ሰነዶች</h3>
 <div id="docs"></div>
 
-<h3>Verification Checklist</h3>
+<h3>የማረጋገጫ ዝርዝር</h3>
 
 <!-- Officer editable -->
 <div id="checklistSection">
@@ -73,15 +75,17 @@
 <!-- Decision section -->
 <div id="decisionSection">
 
-  <h3>Final Decision</h3>
+  <h3>የመጨረሻ ውሳኔ</h3>
 
   <textarea id="decisionComment" placeholder="አስተያየት"></textarea>
 
   <br><br>
-  <button id="approveBtn">✅ Approve</button>
-  <button id="rejectBtn">❌ Reject</button>
+  <button id="approveBtn"> Approve</button>
+  <button id="rejectBtn"> Reject</button>
 
 </div>
+
+
 
 <script type="module" src="../js/view-application.js"></script>
 

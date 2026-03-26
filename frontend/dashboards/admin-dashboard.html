@@ -9,55 +9,78 @@
 <body>
 
 <header>
-<h2>LPQVS - አስተዳዳሪ ዳሽቦርድ</h2>
-<button onclick="logout()">ውጣ</button>
+  <h2>LPQVS - አስተዳዳሪ ዳሽቦርድ</h2>
+  <button onclick="logout()">ውጣ</button>
 </header>
 
 <div class="container">
 
-<aside class="sidebar">
-<ul>
+  <aside class="sidebar">
+    <ul>
+      <li onclick="showSection('users')">👥 ተጠቃሚ አስተዳደር</li>
+      <li onclick="showSection('audit')">📑 ሎጎች</li>
+      <li onclick="showSection('storage')">💾 ማከማቻ ሁኔታ</li>
+      <li onclick="showSection('settings')">⚙️ ስርዓት ቅንብር</li>
+    </ul>
+  </aside>
 
-<li>👥 ተጠቃሚ አስተዳደር</li>
-<li>📑 ሎጎች</li>
-<li>💾 ማከማቻ ሁኔታ</li>
-<li>⚙️ ስርዓት ቅንብር</li>
+  <main class="content">
 
-</ul>
-</aside>
+    <!-- Users Section -->
+    <section id="users" class="dashboard-section">
+      <h3>የስርዓት ሁኔታ</h3>
+      <div class="cards">
+        <div class="card">
+          <h4>አጠቃላይ ተጠቃሚዎች</h4>
+          <p id="totalUsers">15</p>
+        </div>
+        <div class="card">
+          <h4>የዛሬ ግባቶች</h4>
+          <p id="todayEntries">23</p>
+        </div>
+        <div class="card">
+          <h4>Storage</h4>
+          <p>65%</p>
+        </div>
+      </div>
+    </section>
 
-<main class="content">
+    <!-- Audit Logs Section -->
+    <section id="audit" class="dashboard-section" style="display:none;">
+      <h3>የስርዓት ሎጎች</h3>
+      <table id="auditTable">
+        <thead>
+          <tr>
+            <th>ተ.ቁ</th>
+            <th>ተጠቃሚ</th>
+            <th>ሂደት</th>
+            <th>ሁኔታ</th>
+            <th>ቀን/ሰዓት</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Logs will be injected here -->
+        </tbody>
+      </table>
+    </section>
 
-<h3>የስርዓት ሁኔታ</h3>
+    <!-- Storage Section -->
+    <section id="storage" class="dashboard-section" style="display:none;">
+      <h3>Storage ሁኔታ</h3>
+      <p>65% ተሞልቷል</p>
+    </section>
 
-<div class="cards">
+    <!-- Settings Section -->
+    <section id="settings" class="dashboard-section" style="display:none;">
+      <h3>ስርዓት ቅንብር</h3>
+      <p>የስርዓት ቅንብሮች እዚህ ይታያሉ</p>
+    </section>
 
-<div class="card">
-<h4>አጠቃላይ ተጠቃሚዎች</h4>
-<p>15</p>
+  </main>
+
 </div>
 
-<div class="card">
-<h4>የዛሬ ግባቶች</h4>
-<p>23</p>
-</div>
-
-<div class="card">
-<h4>Storage</h4>
-<p>65%</p>
-</div>
-
-</div>
-
-</main>
-
-</div>
-
-<script>
-function logout(){
-window.location.href="../login.html";
-}
-</script>
+<script src="../js/admin-dashboard.js"></script>
 
 </body>
 </html>

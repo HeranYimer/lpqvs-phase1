@@ -12,14 +12,14 @@ async function loadApplications() {
     const row = document.createElement("tr");
 
     row.innerHTML = `
-      <td>${app.id}</td>
-      <td>${app.name}</td>
-      <td>${app.status}</td>
-      <td>
-        <a href="view-application.html?id=${app.id}">View</a>
-      </td>
-      <td>${app.address}</td>
-    `;
+  <td data-label="ID">${app.id}</td>
+  <td data-label="ስም">${app.name}</td>
+  <td data-label="ሁኔታ">${app.status}</td>
+  <td data-label="ተግባር">
+    <a href="view-application.html?id=${app.id}">View</a>
+  </td>
+  <td data-label="አድራሻ">${app.address}</td>
+`;
 
     table.appendChild(row);
   });
