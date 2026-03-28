@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>Admin Settings</title>
+<link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+<a href="./dashboards/admin-dashboard.html">← Back</a>
+<header>
+  <h2>LPQVS - ⚙️ ስርዓት ቅንብር</h2>
+  <button onclick="logout()">ውጣ</button>
+</header>
+
+<div class="container">
+
+<main class="content">
+
+<h3>⚙️ ስርዓት ቅንብር</h3>
+
+<div class="cards">
+
+<!-- System Name -->
+<div class="card">
+  <h4>System Name</h4>
+  <input type="text" id="systemName" value="LPQVS">
+</div>
+
+<!-- Phase -->
+<div class="card">
+  <h4>System Phase</h4>
+  <input type="text" id="systemPhase" value="Phase I">
+</div>
+
+<!-- Role -->
+<div class="card">
+  <h4>Role</h4>
+  <p>Admin</p>
+</div>
+
+<!-- Backend Status -->
+<div class="card">
+  <h4>Backend Status</h4>
+  <p id="backendStatus">Checking...</p>
+</div>
+
+</div>
+
+<br>
+
+<button onclick="saveSettings()">💾 አስቀምጥ</button>
+
+<p id="message" style="margin-top:10px;"></p>
+
+</main>
+
+</div>
+
+<script>
+
+// ================= CHECK BACKEND =================
+async function checkBackend() {
+  try {
+    const res = await fetch("http://localhost:5000/api/dashboard-stats", {
+      credentials: "include"
+    });
+
+    document.getElementById("backendStatus").innerText =
+      res.ok ? "🟢 Connected" : "🔴 Error";
+
+  } catch (err) {
+    document.getElementById("backendStatus").innerText = "🔴 Offline";
+  }
+}
+
+// ================= SAVE SETTINGS =================
+function saveSettings() {
+
+  const name = document.getElementById("systemName").value;
+  const phase = document.getElementById("systemPhase").value;
+
+  // 🔥 SAVE BOTH
+  localStorage.setItem("systemName", name);
+  localStorage.setItem("systemPhase", phase);
+
+  document.getElementById("message").innerText =
+    " ቅንብር ተቀምጧል";
+}
+
+// ================= LOAD SETTINGS =================
+function loadSettings() {
+
+  const name = localStorage.getItem("systemName");
+  const phase = localStorage.getItem("systemPhase");
+
+  if (name) {
+    document.getElementById("systemName").value = name;
+  }
+
+  if (phase) {
+    document.getElementById("systemPhase").value = phase;
+  }
+}
+
+// ================= LOGOUT =================
+async function logout() {
+  await fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  window.location.href = "../login.html";
+}
+
+// INIT
+checkBackend();
+loadSettings();
+
+</script>
+
+</body>
+</html>

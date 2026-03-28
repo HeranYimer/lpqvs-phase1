@@ -1,50 +1,36 @@
-// ==========================
-// Logout
-// ==========================
-function logout(){
-  window.location.href="../login.html";
-}
-
-// ==========================
-// Section Navigation
-// ==========================
-function showSection(id){
-  document.querySelectorAll('.dashboard-section').forEach(sec => sec.style.display='none');
-  document.getElementById(id).style.display = 'block';
-
-  if(id === 'audit'){
-    loadAuditLogs();
-  }
-}
-
-// ==========================
-// Load Audit Logs
-// ==========================
-async function loadAuditLogs() {
+// ================= LOAD ADMIN OVERVIEW =================
+async function loadOverview() {
   try {
-    const res = await fetch("http://localhost:5000/api/audit-logs", { credentials: "include" });
-    const logs = await res.json();
-    
-    const tbody = document.querySelector("#auditTable tbody");
-    tbody.innerHTML = "";
+    const res = await fetch("http://localhost:5000/api/admin-overview", {
+      credentials: "include"
+    });
 
-    if(!logs || logs.length === 0){
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">ሎጎች አልተገኙም</td></tr>`;
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Access denied");
       return;
     }
 
-    logs.forEach((log, index) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${log.username}</td>
-        <td>${log.action}</td>
-        <td>${log.status}</td>
-        <td>${new Date(log.created_at).toLocaleString('am-ET')}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    document.getElementById("total").innerText = data.total || 0;
+    document.getElementById("pending").innerText = data.pending || 0;
+    document.getElementById("approved").innerText = data.approved || 0;
+    document.getElementById("rejected").innerText = data.rejected || 0;
+
   } catch (err) {
-    console.error("Error loading audit logs:", err);
+    console.error("Overview error:", err);
   }
 }
+
+// ================= LOGOUT =================
+function logout(){
+  fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include"
+  }).then(() => {
+    window.location.href = "../login.html";
+  });
+}
+
+// INIT
+loadOverview();

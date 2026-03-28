@@ -2,7 +2,8 @@ import express from "express";
 import upload from "../config/upload.js";
 import { createApplication } from "../controllers/application.controller.js";
 import db from "../config/db.js";
-
+import fs from "fs";
+import path from "path";
 const router = express.Router();
 
 // Multer middleware
@@ -27,7 +28,43 @@ router.post("/applications", (req, res) => {
     createApplication(req, res);
   });
 });
+// ================= UPLOAD MISSING DOCUMENTS =================
+router.post("/applications/:id/upload", (req, res) => {
+  const appId = req.params.id;
 
+  uploadMiddleware(req, res, (err) => {
+    if (err) return res.status(400).json({ message: "Upload error" });
+
+    const files = req.files;
+    const docs = [];
+
+    if (files?.signature) {
+      docs.push([appId, "signature", files.signature[0].filename]);
+    }
+
+    if (files?.fayida_doc) {
+      docs.push([appId, "fayida_id", files.fayida_doc[0].filename]);
+    }
+
+    if (files?.kebele_doc) {
+      docs.push([appId, "kebele_id", files.kebele_doc[0].filename]);
+    }
+
+    if (docs.length === 0) {
+      return res.status(400).json({ message: "No files selected" });
+    }
+
+    db.query(
+      "INSERT INTO documents (application_id, doc_type, file_path) VALUES ?",
+      [docs],
+      (err) => {
+        if (err) return res.status(500).json({ message: "DB error" });
+
+        res.json({ message: "Documents uploaded" });
+      }
+    );
+  });
+});
 // ================= VERIFY =================
 router.post("/applications/:id/verify", (req, res) => {
   const applicationId = req.params.id;
@@ -301,37 +338,118 @@ router.get("/reports/daily", (req, res) => {
 // ==========================
 // Dashboard stats
 // Example
-router.get("/dashboard-stats", async (req, res) => {
-  try {
-    const [[{ total }]] = await db.query("SELECT COUNT(*) as total FROM users");
-    const [[{ today }]] = await db.query("SELECT COUNT(*) as today FROM applications WHERE DATE(created_at)=CURDATE()");
-    res.json({ totalUsers: total, todayEntries: today });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+router.get("/dashboard-stats", (req, res) => {
+
+  db.query("SELECT COUNT(*) AS total FROM users", (err1, userResult) => {
+    if (err1) {
+      console.error(err1);
+      return res.status(500).json({ message: "DB error (users)" });
+    }
+
+    db.query(
+      "SELECT COUNT(*) AS today FROM applications WHERE DATE(created_at)=CURDATE()",
+      (err2, appResult) => {
+        if (err2) {
+          console.error(err2);
+          return res.status(500).json({ message: "DB error (applications)" });
+        }
+
+        res.json({
+          totalUsers: userResult[0].total,
+          todayEntries: appResult[0].today
+        });
+      }
+    );
+
+  });
+
 });
 
 // Storage usage
-// router.get("/storage-usage", async (req, res) => {
-//   try {
-//     // Dummy example: calculate used DB size or file folder usage
-//     // You can implement real storage calculation if needed
-//     res.json({ usage: "65%" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
+router.get("/storage-usage", (req, res) => {
 
-// // Audit logs (admin only)
-// router.get("/audit-logs", async (req, res) => {
-//   try {
-//     const [rows] = await db.query("SELECT username, action, status, created_at FROM audit_logs ORDER BY created_at DESC");
-//     res.json(rows);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
+  const uploadPath = path.join(process.cwd(), "uploads");
+
+  let totalSize = 0;
+
+  function calculateSize(dir) {
+    const files = fs.readdirSync(dir);
+
+    files.forEach(file => {
+      const filePath = path.join(dir, file);
+      const stats = fs.statSync(filePath);
+
+      if (stats.isDirectory()) {
+        calculateSize(filePath);
+      } else {
+        totalSize += stats.size;
+      }
+    });
+  }
+
+  try {
+    calculateSize(uploadPath);
+
+    const sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+
+    res.json({
+      usage: sizeMB + " MB"
+    });
+
+  } catch (err) {
+    res.json({ usage: "0 MB" });
+  }
+});
+// ================= AUDIT LOGS (ADMIN ONLY) =================
+router.get("/audit-logs", (req, res) => {
+
+  const role = req.session.user?.role;
+
+  if (role !== "Admin") {
+    return res.status(403).json({ message: "አልተፈቀደም" });
+  }
+
+  db.query(
+    `SELECT 
+        audit_logs.id,
+        users.username,
+        audit_logs.action,
+        audit_logs.created_at
+     FROM audit_logs
+     JOIN users ON audit_logs.user_id = users.id
+     ORDER BY audit_logs.created_at DESC`,
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "DB error" });
+      }
+
+      res.json(results);
+    }
+  );
+});
+// ================= ADMIN GENERAL STATUS =================
+router.get("/admin-overview", (req, res) => {
+
+  const role = req.session.user?.role?.toLowerCase();
+
+  if (role !== "admin") {
+    return res.status(403).json({ message: "አልተፈቀደም" });
+  }
+
+  db.query(`
+    SELECT 
+      COUNT(*) AS total,
+      SUM(status = 'Pending') AS pending,
+      SUM(status = 'Approved') AS approved,
+      SUM(status = 'Rejected') AS rejected
+    FROM applications
+  `, (err, result) => {
+
+    if (err) return res.status(500).json({ message: "DB error" });
+
+    res.json(result[0]);
+  });
+
+});
 export default router;

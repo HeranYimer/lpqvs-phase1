@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>LPQVS - ማከማቻ (Admin)</title>
+
+<!-- ✅ FIXED CSS PATH (standard for all dashboards) -->
+<link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+<a href="./dashboards/admin-dashboard.html">← Back</a>
+<!-- ================= HEADER ================= -->
+<header>
+  <h2>LPQVS - ማከማቻ (Admin Dashboard)</h2>
+</header>
+
+<!-- ================= CONTENT ================= -->
+<div class="content">
+
+  <h3>Storage ሁኔታ</h3>
+
+  <div class="cards">
+
+    <div class="card">
+      <h4>Storage Usage</h4>
+      <p id="storageValue">Loading...</p>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+
+async function loadStorage() {
+  try {
+    const res = await fetch("http://localhost:5000/api/storage-usage", {
+      credentials: "include"
+    });
+
+    // If backend fails, avoid crash
+    if (!res.ok) {
+      throw new Error("Failed to load storage");
+    }
+
+    const data = await res.json();
+
+    document.getElementById("storageValue").innerText =
+      (data.usage ?? 0) + " ተሞልቷል";
+
+  } catch (err) {
+    console.error("Storage load error:", err);
+    document.getElementById("storageValue").innerText =
+      "Error loading storage";
+  }
+}
+
+async function logout() {
+  try {
+    await fetch("http://localhost:5000/api/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
+  window.location.href = "../login.html";
+}
+
+// Load on page start
+loadStorage();
+
+</script>
+
+</body>
+</html>

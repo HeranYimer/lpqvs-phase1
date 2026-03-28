@@ -31,7 +31,7 @@
 </li>
 
 <li>
-<a href="#">
+<a href="../applications/upload-documents.html">
 📤 ሰነዶች መጫን
 </a>
 </li>
@@ -46,17 +46,17 @@
 
 <div class="card">
 <h4>የሚጠባበቁ ማመልከቻዎች</h4>
-<p>12</p>
+<p id="pending">0</p>
 </div>
 
 <div class="card">
 <h4>ዛሬ የተሰሩ</h4>
-<p>5</p>
+<p id="today">0</p>
 </div>
 
 <div class="card">
 <h4>የወር አፈፃፀም</h4>
-<p>48</p>
+<p id="total">0</p>
 </div>
 
 </div>
@@ -69,6 +69,26 @@
 function logout(){
 window.location.href="../login.html";
 }
+async function loadOfficerDashboard() {
+  try {
+    const res = await fetch("http://localhost:5000/api/reports/summary");
+    const data = await res.json();
+
+    document.getElementById("pending").innerText = data.pending || 0;
+    document.getElementById("total").innerText = data.total || 0;
+
+    const todayRes = await fetch("http://localhost:5000/api/dashboard-stats");
+    const todayData = await todayRes.json();
+
+    document.getElementById("today").innerText = todayData.todayEntries || 0;
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+loadOfficerDashboard();
+
 </script>
 
 </body>

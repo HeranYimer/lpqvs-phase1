@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>ሰነዶች መጫን</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+
+<a href="../dashboards/officer-dashboard.html">← Back</a>
+
+<h2>ሰነዶች መጫን</h2>
+
+<div id="messageBox"></div>
+
+<!-- Wrap everything in a form -->
+<form id="uploadForm">
+  <label>Application ID</label>
+  <input type="number" id="appId" required>
+
+  <h3>Upload Missing Documents</h3>
+
+  <label>Signature</label>
+  <input type="file" id="signature">
+
+  <label>Fayida Document</label>
+  <input type="file" id="fayida_doc">
+
+  <label>Kebele Document</label>
+  <input type="file" id="kebele_doc">
+
+  <br><br>
+  <button type="submit" id="uploadBtn">Upload</button>
+</form>
+
+<script type="module" src="../js/upload-documents.js"></script>
+
+</body>
+</html>

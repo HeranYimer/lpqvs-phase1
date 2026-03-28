@@ -2,81 +2,79 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8">
-<title>Admin Dashboard</title>
-<link rel="stylesheet" href="dashboard.css">
+<title>LPQVS - አስተዳዳሪ ዳሽቦርድ</title>
+<link rel="stylesheet" href="./dashboard.css">
 </head>
 
 <body>
 
 <header>
-  <h2>LPQVS - አስተዳዳሪ ዳሽቦርድ</h2>
-  <button onclick="logout()">ውጣ</button>
+<h2>LPQVS - አስተዳዳሪ ዳሽቦርድ</h2>
+<button onclick="logout()">ውጣ</button>
 </header>
 
 <div class="container">
 
-  <aside class="sidebar">
-    <ul>
-      <li onclick="showSection('users')">👥 ተጠቃሚ አስተዳደር</li>
-      <li onclick="showSection('audit')">📑 ሎጎች</li>
-      <li onclick="showSection('storage')">💾 ማከማቻ ሁኔታ</li>
-      <li onclick="showSection('settings')">⚙️ ስርዓት ቅንብር</li>
-    </ul>
-  </aside>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<ul>
+<li>
+<a href="../analytics.html">
+📊 ዳሽቦርድ
+</a>
+</li>
 
-  <main class="content">
+<li>
+<a href="../audit.html">
+📑 ሎጎች
+</a>
+</li>
 
-    <!-- Users Section -->
-    <section id="users" class="dashboard-section">
-      <h3>የስርዓት ሁኔታ</h3>
-      <div class="cards">
-        <div class="card">
-          <h4>አጠቃላይ ተጠቃሚዎች</h4>
-          <p id="totalUsers">15</p>
-        </div>
-        <div class="card">
-          <h4>የዛሬ ግባቶች</h4>
-          <p id="todayEntries">23</p>
-        </div>
-        <div class="card">
-          <h4>Storage</h4>
-          <p>65%</p>
-        </div>
-      </div>
-    </section>
+<li>
+<a href="../storage.html">
+💾 ማከማቻ
+</a>
+</li>
 
-    <!-- Audit Logs Section -->
-    <section id="audit" class="dashboard-section" style="display:none;">
-      <h3>የስርዓት ሎጎች</h3>
-      <table id="auditTable">
-        <thead>
-          <tr>
-            <th>ተ.ቁ</th>
-            <th>ተጠቃሚ</th>
-            <th>ሂደት</th>
-            <th>ሁኔታ</th>
-            <th>ቀን/ሰዓት</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Logs will be injected here -->
-        </tbody>
-      </table>
-    </section>
+<li>
+<a href="../settings.html">
+⚙️ ቅንብር
+</a>
+</li>
 
-    <!-- Storage Section -->
-    <section id="storage" class="dashboard-section" style="display:none;">
-      <h3>Storage ሁኔታ</h3>
-      <p>65% ተሞልቷል</p>
-    </section>
+</ul>
+</aside>
 
-    <!-- Settings Section -->
-    <section id="settings" class="dashboard-section" style="display:none;">
-      <h3>ስርዓት ቅንብር</h3>
-      <p>የስርዓት ቅንብሮች እዚህ ይታያሉ</p>
-    </section>
+<!-- MAIN CONTENT -->
+<main class="content">
 
-  </main>
+<h3>🏠 አጠቃላይ ሁኔታ</h3>
+
+<div class="cards">
+
+<div class="card">
+<h4>ጠቅላላ ማመልከቻ</h4>
+<p id="total">0</p>
+</div>
+
+<div class="card">
+<h4>በመጠባበቅ ላይ</h4>
+<p id="pending">0</p>
+</div>
+
+<div class="card">
+<h4>የተፈቀዱ</h4>
+<p id="approved">0</p>
+</div>
+
+<div class="card">
+<h4>የተከለከሉ</h4>
+<p id="rejected">0</p>
+</div>
+
+</div>
+
+</main>
 
 </div>
 

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="./css/styles.css">
+
+<style>
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filters input,
+.filters select,
+.filters button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.filters button {
+  background: #1f3c88;
+  color: white;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  background: #155ab6;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+thead {
+  background: #1f3c88;
+  color: white;
+}
+</style>
+
+</head>
+
+<body>
+    <br>
+    <a href="./dashboards/admin-dashboard.html" id="backBtn">← ተመለስ</a>
+    <br>
+<header>
+<h2>LPQVS - 📊 ዳሽቦርድ</h2>
+</header>
+
+<div class="container">
+
+<main class="content">
+
+<h3>📊 ትንታኔ</h3>
+
+<!-- 🔥 FILTERS -->
+<div class="filters">
+
+  <input type="date" id="fromDate">
+  <input type="date" id="toDate">
+
+  <!-- የቻርት አይነት -->
+  <select id="chartType">
+    <option value="line">መስመር (Line)</option>
+    <option value="bar">አሞሌ (Bar)</option>
+    <option value="pie">ክብ (Pie)</option>
+  </select>
+
+  <button onclick="filterData()">አጣራ</button>
+  <button onclick="loadLast7Days()">ያለፉት 7 ቀናት</button>
+
+  <button onclick="exportExcel()">ኤክሴል አውርድ</button>
+
+</div>
+
+<!-- CHART -->
+<div style="max-width:700px; margin:auto;">
+  <canvas id="chart" style="max-height:350px;"></canvas>
+</div>
+
+<!-- ✅ TABLE -->
+<h3 style="margin-top:30px;">📅 ያለፉት 7 ቀናት መረጃ</h3>
+
+<table>
+<thead>
+<tr>
+<th>ቀን</th>
+<th>የማመልከቻ ብዛት</th>
+</tr>
+</thead>
+<tbody id="dataTable"></tbody>
+</table>
+
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+let chartInstance = null;
+let currentData = [];
+
+// ================= LOAD LAST 7 DAYS =================
+async function loadLast7Days() {
+  const res = await fetch("http://localhost:5000/api/reports/daily", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+
+  currentData = data;
+
+  renderChart(data);
+  renderTable(data);
+}
+
+// ================= FILTER =================
+async function filterData() {
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+
+  if (!from || !to) {
+    alert("Please select both dates");
+    return;
+  }
+
+  const res = await fetch(
+    `http://localhost:5000/api/reports/range?from=${from}&to=${to}`,
+    { credentials: "include" }
+  );
+
+  const data = await res.json();
+
+  currentData = data;
+
+  renderChart(data);
+  renderTable(data);
+}
+
+// ================= RENDER CHART =================
+function renderChart(data) {
+
+  const labels = data.map(d => d.date);
+  const values = data.map(d => d.count);
+
+  const type = document.getElementById("chartType").value;
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(document.getElementById("chart"), {
+    type: type,
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "ማመልከቻዎች",
+        data: values
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+}
+
+// ================= RENDER TABLE =================
+function renderTable(data) {
+  const table = document.getElementById("dataTable");
+  table.innerHTML = "";
+
+  data.forEach(d => {
+    const row = `
+      <tr>
+        <td>${d.date}</td>
+        <td>${d.count}</td>
+      </tr>
+    `;
+    table.innerHTML += row;
+  });
+}
+
+// ================= EXPORT CSV =================
+function exportExcel() {
+
+  if (currentData.length === 0) {
+    alert("No data to export");
+    return;
+  }
+
+  let csv = "Date,Applications\n";
+
+  currentData.forEach(d => {
+    csv += `${d.date},${d.count}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "report.csv";
+  a.click();
+}
+
+// ================= LOGOUT =================
+function logout(){
+  fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include"
+  }).then(() => {
+    window.location.href = "../login.html";
+  });
+}
+
+// 🔥 Re-render chart when type changes
+document.getElementById("chartType").addEventListener("change", () => {
+  renderChart(currentData);
+});
+
+// INIT
+loadLast7Days();
+
+</script>
+
+</body>
+</html>
