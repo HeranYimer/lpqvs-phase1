@@ -1,7 +1,7 @@
-let chartInstance = null;
+// let chartInstance = null;
 
 const refreshBtn = document.getElementById("refreshBtn");
-const chartTypeSelect = document.getElementById("chartType");
+// const chartTypeSelect = document.getElementById("chartType");
 
 async function loadDashboard() {
 
@@ -45,12 +45,12 @@ async function loadDashboard() {
     });
 
     // CHART
-    renderChart(labels, values, chartTypeSelect.value);
+    // renderChart(labels, values, chartTypeSelect.value);
 
-    // chart type change
-    chartTypeSelect.addEventListener("change", () => {
-      renderChart(labels, values, chartTypeSelect.value);
-    });
+    // // chart type change
+    // chartTypeSelect.addEventListener("change", () => {
+    //   renderChart(labels, values, chartTypeSelect.value);
+    // });
 
   } catch (err) {
     console.error(err);
@@ -59,28 +59,28 @@ async function loadDashboard() {
 }
 
 // ================= CHART =================
-function renderChart(labels, values, type) {
+// function renderChart(labels, values, type) {
 
-  const ctx = document.getElementById("dailyChart").getContext("2d");
+//   const ctx = document.getElementById("dailyChart").getContext("2d");
 
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+//   if (chartInstance) {
+//     chartInstance.destroy();
+//   }
 
-  chartInstance = new Chart(ctx, {
-    type: type,
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "Applications",
-        data: values
-      }]
-    },
-    options: {
-      responsive: true
-    }
-  });
-}
+//   chartInstance = new Chart(ctx, {
+//     type: type,
+//     data: {
+//       labels: labels,
+//       datasets: [{
+//         label: "Applications",
+//         data: values
+//       }]
+//     },
+//     options: {
+//       responsive: true
+//     }
+//   });
+// }
 
 // ================= EVENTS =================
 refreshBtn.addEventListener("click", loadDashboard);

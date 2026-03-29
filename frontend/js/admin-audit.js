@@ -8,17 +8,27 @@ async function loadAuditLogs() {
 
     const logs = await res.json();
 
+    if (!res.ok) {
+      console.error("Server error:", logs.message);
+      return;
+    }
+
+    if (!Array.isArray(logs)) {
+      console.error("Expected array but got:", logs);
+      return;
+    }
+
     table.innerHTML = "";
 
     logs.forEach((log, index) => {
       const row = document.createElement("tr");
 
-      row.innerHTML = `
-        <td data-label="#">${index + 1}</td>
-        <td data-label="ተጠቃሚ">${log.username}</td>
-        <td data-label="ሁኔታ">${log.action}</td>
-        <td data-label="ቀን">${new Date(log.created_at).toLocaleString()}</td>
-      `;
+     row.innerHTML = `
+  <td data-label="ተ.ቁ">${index + 1}</td>
+  <td data-label="ተጠቃሚ">${log.username}</td>
+  <td data-label="ሁኔታ">${log.action}</td>
+  <td data-label="ቀን">${new Date(log.created_at).toLocaleString()}</td>
+`;
 
       table.appendChild(row);
     });

@@ -48,7 +48,7 @@ document.getElementById("uploadBtn").addEventListener("click", async (e) => {
   const appId = document.getElementById("appId").value;
 
   if (!appId) {
-    showMessage("Application ID required", "error");
+    showMessage("የማመልከቻ መታወቂያ ያስፈልጋል", "error");
     return;
   }
 
@@ -74,9 +74,9 @@ document.getElementById("uploadBtn").addEventListener("click", async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      showMessage("Documents uploaded successfully");
+      showMessage("ሰነዶች በተሳካ ሁኔታ ተጭነዋል");
     } else {
-      showMessage(data.message || "Upload failed", "error");
+      showMessage(data.message || "መጫን አልተሳካም", "error");
     }
   } catch (err) {
     showMessage("Server error", "error");

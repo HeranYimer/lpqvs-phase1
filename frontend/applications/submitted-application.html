@@ -2,18 +2,19 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8">
-<title>የማመልከቻ ዝርዝር</title>
+<title>ሁሉም ማመልከቻ ዝርዝሮች</title>
 <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-<a href="#" id="backBtn">← Back</a>
+<a href="#" id="backBtn">← ተመለስ</a>
+<div id="toast-container"></div>
 <h2>ሁሉም ማመልከቻ ዝርዝሮች</h2>
 
 <table border="2">
 <thead>
 <tr>
-<th>ID</th>
+<th>መለያ</th>
 <th>ስም</th>
 <th>ሁኔታ</th>
 <th>ተግባር</th>
@@ -26,6 +27,15 @@
 </table>
 
 <script type="module" src="../js/submitted-applications.js"></script>
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-box">
+    <p id="confirmMessage">Are you sure?</p>
 
+    <div class="modal-actions">
+      <button id="confirmYes">Yes</button>
+      <button id="confirmNo">No</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

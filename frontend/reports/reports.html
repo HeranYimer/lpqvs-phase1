@@ -2,48 +2,291 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8">
-<title>Reports</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>ሪፖርቶች</title>
+<link rel="stylesheet" href="../css/styles.css">
 
 <style>
-.spinner {
-  display: none;
-  border: 5px solid #ccc;
-  border-top: 5px solid #333;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+
+/* ================= FILTERS ================= */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
+/* Group label + input */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
+
+/* Inputs */
+.filters input,
+.filters select,
+.filters button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Buttons */
+.filters button {
+  background: #1f3c88;
+  color: white;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  background: #155ab6;
+}
+
+/* ================= TABLE ================= */
+.table-container {
+  max-width: 650px;
+  margin: auto;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+thead {
+  background: #1f3c88;
+  color: white;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .field {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filters input,
+  .filters select,
+  .filters button {
+    width: 100%;
+  }
+}
+
 </style>
 
 </head>
 
 <body>
-<a href="../dashboards/supervisor-dashboard.html" id="backBtn">← Back</a>
 
-<h2>Reports</h2>
+<br>
+<a href="../dashboards/supervisor-dashboard.html" id="backBtn">← ተመለስ</a>
+<br>
 
-<label>From:</label>
-<input type="date" id="fromDate">
+<h2>ሪፖርቶች</h2>
 
-<label>To:</label>
-<input type="date" id="toDate">
+<div class="container">
 
-<button id="filterBtn">Filter</button>
-<button id="exportBtn">Export CSV</button>
+<main class="content">
 
-<div class="spinner" id="spinner"></div>
+<!-- ================= FILTERS ================= -->
+<div class="filters">
 
-<canvas id="reportChart"></canvas>
+  <div class="field">
+    <label>ከ:</label>
+    <input type="date" id="fromDate">
+  </div>
 
-<script type="module" src="../js/reports.js"></script>
+  <div class="field">
+    <label>እስከ:</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <div class="field">
+    <select id="chartType">
+      <option value="line">መስመር/Line</option>
+      <option value="bar">አሞሌ/Bar</option>
+      <option value="pie">ክብ/Pie</option>
+    </select>
+  </div>
+
+  <button onclick="filterData()">አጣራ</button>
+  <button onclick="loadLast7Days()">ያለፉት 7 ቀናት</button>
+  <button onclick="exportExcel()">ኤክሴል አውርድ</button>
+
+</div>
+
+<!-- ================= CHART ================= -->
+<div style="max-width:700px; margin:auto;">
+  <canvas id="chart" style="max-height:350px;"></canvas>
+</div>
+
+<!-- ================= TABLE ================= -->
+<h3 style="margin-top:30px;">📅 ያለፉት 7 ቀናት መረጃ</h3>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>ቀን</th>
+<th>የማመልከቻ ብዛት</th>
+</tr>
+</thead>
+<tbody id="dataTable"></tbody>
+</table>
+</div>
+
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+let chartInstance = null;
+let currentData = [];
+
+// ================= FORMAT DATE =================
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
+
+// ================= LOAD LAST 7 DAYS =================
+async function loadLast7Days() {
+  const res = await fetch("http://localhost:5000/api/reports/daily", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+
+  currentData = data;
+
+  renderChart(data);
+  renderTable(data);
+}
+
+// ================= FILTER =================
+async function filterData() {
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+
+  if (!from || !to) {
+    alert("እባክዎ ሁለቱንም ቀናት ይምረጡ");
+    return;
+  }
+
+  const res = await fetch(
+    `http://localhost:5000/api/reports/range?from=${from}&to=${to}`,
+    { credentials: "include" }
+  );
+
+  const data = await res.json();
+
+  currentData = data;
+
+  renderChart(data);
+  renderTable(data);
+}
+
+// ================= RENDER CHART =================
+function renderChart(data) {
+
+  const labels = data.map(d => formatDate(d.date));
+  const values = data.map(d => d.count);
+
+  const type = document.getElementById("chartType").value;
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(document.getElementById("chart"), {
+    type: type,
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "ማመልከቻዎች",
+        data: values
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+}
+
+// ================= RENDER TABLE =================
+function renderTable(data) {
+  const table = document.getElementById("dataTable");
+  table.innerHTML = "";
+
+  data.forEach(d => {
+    const row = `
+      <tr>
+        <td data-label="ቀን">${formatDate(d.date)}</td>
+        <td data-label="የማመልከቻ ብዛት">${d.count}</td>
+      </tr>
+    `;
+    table.innerHTML += row;
+  });
+}
+
+// ================= EXPORT =================
+function exportExcel() {
+
+  if (currentData.length === 0) {
+    alert("የሚወርድ መረጃ የለም");
+    return;
+  }
+
+  let csv = "Date,Applications\n";
+
+  currentData.forEach(d => {
+    csv += `${d.date},${d.count}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "report.csv";
+  a.click();
+}
+
+// ================= LOGOUT =================
+function logout(){
+  fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include"
+  }).then(() => {
+    window.location.href = "../login.html";
+  });
+}
+
+// ================= CHANGE CHART TYPE =================
+document.getElementById("chartType").addEventListener("change", () => {
+  renderChart(currentData);
+});
+
+// INIT
+loadLast7Days();
+
+</script>
 
 </body>
 </html>

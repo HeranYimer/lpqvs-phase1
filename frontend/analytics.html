@@ -2,17 +2,28 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8">
-<title>Admin Dashboard</title>
+<title>ዳሽቦርድ</title>
 <link rel="stylesheet" href="./css/styles.css">
 
 <style>
+
+/* ================= FILTERS ================= */
 .filters {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
+/* Group label + input */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Inputs */
 .filters input,
 .filters select,
 .filters button {
@@ -21,6 +32,7 @@
   border-radius: 5px;
 }
 
+/* Buttons */
 .filters button {
   background: #1f3c88;
   color: white;
@@ -29,6 +41,12 @@
 
 .filters button:hover {
   background: #155ab6;
+}
+
+/* ================= TABLE ================= */
+.table-container {
+  max-width: 650px;
+  margin: auto;
 }
 
 table {
@@ -47,16 +65,39 @@ thead {
   background: #1f3c88;
   color: white;
 }
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .field {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filters input,
+  .filters select,
+  .filters button {
+    width: 100%;
+  }
+}
+
 </style>
 
 </head>
 
 <body>
-    <br>
-    <a href="./dashboards/admin-dashboard.html" id="backBtn">← ተመለስ</a>
-    <br>
+
+<br>
+<a href="./dashboards/admin-dashboard.html" id="backBtn">← ተመለስ</a>
+<br>
+
 <header>
-<h2>LPQVS - 📊 ዳሽቦርድ</h2>
+<h2>ዳሽቦርድ</h2>
 </header>
 
 <div class="container">
@@ -65,34 +106,42 @@ thead {
 
 <h3>📊 ትንታኔ</h3>
 
-<!-- 🔥 FILTERS -->
+<!-- ================= FILTERS ================= -->
 <div class="filters">
 
-  <input type="date" id="fromDate">
-  <input type="date" id="toDate">
+  <div class="field">
+    <label>ከ:</label>
+    <input type="date" id="fromDate">
+  </div>
 
-  <!-- የቻርት አይነት -->
-  <select id="chartType">
-    <option value="line">መስመር (Line)</option>
-    <option value="bar">አሞሌ (Bar)</option>
-    <option value="pie">ክብ (Pie)</option>
-  </select>
+  <div class="field">
+    <label>እስከ:</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <div class="field">
+    <select id="chartType">
+      <option value="line">መስመር/Line</option>
+      <option value="bar">አሞሌ/Bar</option>
+      <option value="pie">ክብ/Pie</option>
+    </select>
+  </div>
 
   <button onclick="filterData()">አጣራ</button>
   <button onclick="loadLast7Days()">ያለፉት 7 ቀናት</button>
-
   <button onclick="exportExcel()">ኤክሴል አውርድ</button>
 
 </div>
 
-<!-- CHART -->
+<!-- ================= CHART ================= -->
 <div style="max-width:700px; margin:auto;">
   <canvas id="chart" style="max-height:350px;"></canvas>
 </div>
 
-<!-- ✅ TABLE -->
+<!-- ================= TABLE ================= -->
 <h3 style="margin-top:30px;">📅 ያለፉት 7 ቀናት መረጃ</h3>
 
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -102,6 +151,7 @@ thead {
 </thead>
 <tbody id="dataTable"></tbody>
 </table>
+</div>
 
 </main>
 
@@ -113,6 +163,11 @@ thead {
 
 let chartInstance = null;
 let currentData = [];
+
+// ================= FORMAT DATE =================
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
 
 // ================= LOAD LAST 7 DAYS =================
 async function loadLast7Days() {
@@ -134,7 +189,7 @@ async function filterData() {
   const to = document.getElementById("toDate").value;
 
   if (!from || !to) {
-    alert("Please select both dates");
+    alert("እባክዎ ሁለቱንም ቀናት ይምረጡ");
     return;
   }
 
@@ -154,7 +209,7 @@ async function filterData() {
 // ================= RENDER CHART =================
 function renderChart(data) {
 
-  const labels = data.map(d => d.date);
+  const labels = data.map(d => formatDate(d.date));
   const values = data.map(d => d.count);
 
   const type = document.getElementById("chartType").value;
@@ -186,19 +241,19 @@ function renderTable(data) {
   data.forEach(d => {
     const row = `
       <tr>
-        <td>${d.date}</td>
-        <td>${d.count}</td>
+        <td data-label="ቀን">${formatDate(d.date)}</td>
+        <td data-label="የማመልከቻ ብዛት">${d.count}</td>
       </tr>
     `;
     table.innerHTML += row;
   });
 }
 
-// ================= EXPORT CSV =================
+// ================= EXPORT =================
 function exportExcel() {
 
   if (currentData.length === 0) {
-    alert("No data to export");
+    alert("የሚወርድ መረጃ የለም");
     return;
   }
 
@@ -227,7 +282,7 @@ function logout(){
   });
 }
 
-// 🔥 Re-render chart when type changes
+// ================= CHANGE CHART TYPE =================
 document.getElementById("chartType").addEventListener("change", () => {
   renderChart(currentData);
 });

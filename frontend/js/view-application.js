@@ -52,12 +52,17 @@ const checklistView = document.getElementById("checklistView");
 const saveBtn = document.getElementById("saveVerification");
 
 // role-based UI
-if (role === "supervisor") {
-  checklistForm.style.display = "none";
-  checklistView.style.display = "block";
-} else {
+if (role === "officer") {
   checklistForm.style.display = "block";
   checklistView.style.display = "none";
+} else {
+  checklistForm.style.display = "none";
+  checklistView.style.display = "block";
+}
+
+// hide decision for non-supervisor
+if (role !== "supervisor") {
+  document.getElementById("decisionSection").style.display = "none";
 }
 
 // =======================
@@ -71,16 +76,16 @@ async function loadApplicationDetails() {
     const detailsDiv = document.getElementById("details");
 
     detailsDiv.innerHTML = `
-      <p><strong>ID:</strong> ${app.id}</p>
+      <p><strong>መለያ:</strong> ${app.id}</p>
       <p><strong>ስም:</strong> ${app.name}</p>
       <p><strong>ፋይዳ:</strong> ${app.fayida_id || "-"}</p>
       <p><strong>ቀበሌ:</strong> ${app.kebele_id}</p>
       <p><strong>አድራሻ:</strong> ${app.address}</p>
       <p><strong>የጋብቻ ሁኔታ:</strong> ${app.marital_status}</p>
       <p><strong>ሁኔታ:</strong> ${app.status}</p>
-      <p><strong>Eligibility:</strong> ${app.eligibility || "Not evaluated"}</p>
-      <p><strong>Decision:</strong> ${app.status || "Pending"}</p>
-      <p><strong>Comment:</strong> ${app.notes || "-"}</p>
+      <p><strong>ብቁነት:</strong> ${app.eligibility || "Not evaluated"}</p>
+      <p><strong>ውሳኔ:</strong> ${app.status || "Pending"}</p>
+      <p><strong>አስተያየት:</strong> ${app.notes || "ምንም አስተያየት የለም"}</p>
     `;
   } catch (err) {
     console.error("Error loading application:", err);
@@ -99,7 +104,7 @@ async function loadDocuments() {
     container.innerHTML = "";
 
     if (docs.length === 0) {
-      container.innerHTML = "<p>No documents uploaded</p>";
+      container.innerHTML = "<p>ምንም ሰነዶች አልተጫኑም</p>";
       return;
     }
 
@@ -148,7 +153,7 @@ document.getElementById("saveVerification").addEventListener("click", async () =
 
   for (let c of checks) {
     if (!c.status) {
-      showMessage("Please complete all verification fields.", "warning");
+      showMessage("እባክዎ ሁሉንም የማረጋገጫ ቦታዎች ያጠናቅቁ።", "warning");
       return;
     }
   }
@@ -165,15 +170,15 @@ document.getElementById("saveVerification").addEventListener("click", async () =
     const data = await res.json();
 
     if (res.ok) {
-      showMessage(`Verification saved successfully. Result: ${data.eligibility}`, "success");
+      showMessage(`ማረጋገጫ በተሳካ ሁኔታ ተቀምጧል Result: ${data.eligibility}`, "success");
       loadVerificationData();
     } else {
-      showMessage(data.message || "Failed to save verification.", "error");
+      showMessage(data.message || "ማረጋገጫን ማስቀመጥ አልተሳካም", "error");
     }
 
   } catch (err) {
     console.error(err);
-    showMessage("Unable to connect to server. Please try again.", "error");
+    showMessage("ከሰርቨሩ ጋር መገናኘት አልተቻለም። እባክዎ እንደገና ይሞክሩ", "error");
   }
 
 });
@@ -200,13 +205,13 @@ async function makeDecision(decision) {
     const data = await res.json();
 
     if (res.ok) {
-      showMessage(`Decision recorded: ${data.status}`, "success");
+      showMessage(`ውሳኔ ተመዝግቧል: ${data.status}`, "success");
       await loadApplicationDetails();
     }
 
   } catch (err) {
     console.error(err);
-    showMessage("Failed to submit decision. Try again.", "error");
+    showMessage("ውሳኔ ማስገባት አልተሳካም። እንደገና ይሞክሩ።", "error");
   }
 }
 
@@ -228,7 +233,8 @@ async function loadVerificationData() {
 
     if (!data || data.length === 0) return;
 
-    if (role === "supervisor") {
+    // ✅ FIXED: ADMIN + SUPERVISOR VIEW
+    if (role === "supervisor" || role === "admin") {
 
       let html = "";
 
@@ -236,8 +242,8 @@ async function loadVerificationData() {
         html += `
           <div style="margin-bottom:10px;">
             <strong>${item.check_type.toUpperCase()}</strong><br>
-            Status: ${item.verified ? "Verified" : "Not Verified"}<br>
-            Comment: ${item.comments || "No comment"}
+            ሁኔታ: ${item.verified ? "✔ ተረጋግጧል" : "❌ አልተረጋገጠም"}<br>
+            አስተያየት: ${item.comments || "አስተያየት የለም"}
           </div>
         `;
       });
@@ -247,7 +253,7 @@ async function loadVerificationData() {
     }
 
     data.forEach(item => {
-      const statusValue = item.verified ? "verified" : "not_verified";
+      const statusValue = item.verified ? "ተረጋግጧል" : "አልተረጋገጠም";
 
       if (item.check_type === "land") {
         document.getElementById("land_status").value = statusValue;
@@ -271,7 +277,7 @@ async function loadVerificationData() {
     });
 
   } catch (err) {
-    console.error("Error loading verification:", err);
+    console.error("ማረጋገጥን መጫን ላይ ስህተት:", err);
   }
 }
 

@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>LPQVS</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
-
+<div id="messageBox"></div>
 <h2 id="title"></h2>
 
 <form id="loginForm">
@@ -16,7 +17,13 @@
 <input type="text" id="username" required>
 
 <label id="passwordLabel"></label>
-<input type="password" id="password" required>
+<div class="password-wrapper">
+  <input type="password" id="password" required>
+
+  <span id="togglePassword" class="eye-icon">
+    <i data-lucide="eye"></i>
+  </span>
+</div>
 
 <button type="submit" id="loginBtn"></button>
 

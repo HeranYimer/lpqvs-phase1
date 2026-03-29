@@ -12,7 +12,6 @@ export const createApplication = (req, res) => {
   } = req.body;
 
   const files = req.files;
-
   // ================= DUPLICATION CHECK =================
   // Step 1: If Fayida ID exists → enforce uniqueness
   if (fayida_id) {
@@ -26,7 +25,7 @@ export const createApplication = (req, res) => {
 
         if (results.length > 0) {
           return res.status(400).json({
-            message: "ይህ Fayida ID ቀድሞ ተመዝግቧል። ማመልከቻው ተከልክሏል።"
+            message: "ይህ Fayida መለያ ቀድሞ ተመዝግቧል። ማመልከቻው ተከልክሏል።"
           });
         }
 

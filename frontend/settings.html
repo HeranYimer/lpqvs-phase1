@@ -2,46 +2,42 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8">
-<title>Admin Settings</title>
+<title>ቅንብር</title>
 <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
-<a href="./dashboards/admin-dashboard.html">← Back</a>
-<header>
-  <h2>LPQVS - ⚙️ ስርዓት ቅንብር</h2>
-  <button onclick="logout()">ውጣ</button>
-</header>
+<a href="./dashboards/admin-dashboard.html">← ተመለስ</a>
+
+  <h2>⚙️ ስርዓት ቅንብር</h2>
 
 <div class="container">
 
 <main class="content">
 
-<h3>⚙️ ስርዓት ቅንብር</h3>
-
 <div class="cards">
 
 <!-- System Name -->
 <div class="card">
-  <h4>System Name</h4>
+  <h4>የስርዓት ስም</h4>
   <input type="text" id="systemName" value="LPQVS">
 </div>
 
 <!-- Phase -->
 <div class="card">
-  <h4>System Phase</h4>
+  <h4>የስርዓት ደረጃ</h4>
   <input type="text" id="systemPhase" value="Phase I">
 </div>
 
 <!-- Role -->
 <div class="card">
-  <h4>Role</h4>
-  <p>Admin</p>
+  <h4>ሚና:</h4>
+  <p>አስተዳዳሪ</p><br>
 </div>
 
 <!-- Backend Status -->
 <div class="card">
-  <h4>Backend Status</h4>
+  <h4>የጀርባ ሁኔታ</h4>
   <p id="backendStatus">Checking...</p>
 </div>
 
@@ -67,7 +63,7 @@ async function checkBackend() {
     });
 
     document.getElementById("backendStatus").innerText =
-      res.ok ? "🟢 Connected" : "🔴 Error";
+      res.ok ? "🟢 ተገናኝቷል" : "🔴 ስህተት";
 
   } catch (err) {
     document.getElementById("backendStatus").innerText = "🔴 Offline";
