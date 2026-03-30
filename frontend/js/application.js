@@ -68,13 +68,24 @@ form.addEventListener("submit", async (e) => {
       }
     }
   }
+// ✅ Fayida ID validation (12 digits only)
+const fayidaInput = document.getElementById("fayida_id").value.trim();
 
+if (fayidaInput) {
+  const isValid = /^[0-9]{12}$/.test(fayidaInput);
+
+  if (!isValid) {
+    showMessage("እባክዎ ትክክለኛ የፋይዳ መታወቂያ ያስገቡ", "error");
+    return;
+  }
+}
   const formData = new FormData(form);
 
   try {
     const res = await fetch("http://localhost:5000/api/applications", {
       method: "POST",
-      body: formData
+      body: formData,
+      credentials: "include"
     });
 
     let data = {};

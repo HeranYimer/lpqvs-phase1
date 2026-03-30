@@ -72,7 +72,7 @@ async function loadApplications() {
         <td data-label="ስም">${app.name}</td>
         <td data-label="ሁኔታ">${app.status}</td>
         <td data-label="ተግባር">
-          <a href="view-application.html?id=${app.id}">View</a>
+          <a href="view-application.html?id=${app.id}">ዝርዝር ይመልከቱ</a>
           ${deleteBtn}
         </td>
         <td data-label="አድራሻ">${app.address}</td>

@@ -8,27 +8,38 @@
 </head>
 
 <body>
-<div id="messageBox"></div>
-<h2 id="title"></h2>
 
-<form id="loginForm">
+<div class="login-container">
 
-<label id="usernameLabel"></label>
-<input type="text" id="username" required>
+  <div class="login-header">
+    <h1 id="title"></h1>
+    <p class="subtitle">ይፋዊ የማረጋገጫ ፖርታል</p>
+  </div>
 
-<label id="passwordLabel"></label>
-<div class="password-wrapper">
-  <input type="password" id="password" required>
+  <div id="messageBox"></div>
 
-  <span id="togglePassword" class="eye-icon">
-    <i data-lucide="eye"></i>
-  </span>
+  <form id="loginForm" class="login-form">
+
+    <label id="usernameLabel"></label>
+    <input type="text" id="username" required>
+
+    <label id="passwordLabel"></label>
+    
+    <div class="password-wrapper">
+      <input type="password" id="password" required>
+
+      <span id="togglePassword" class="eye-icon">
+        <i data-lucide="eye"></i>
+      </span>
+    </div>
+
+    <button type="submit" id="loginBtn"></button>
+
+  </form>
+
 </div>
 
-<button type="submit" id="loginBtn"></button>
-
-</form>
-
+<script src="https://unpkg.com/lucide@latest"></script>
 <script type="module" src="./js/login.js"></script>
 
 </body>

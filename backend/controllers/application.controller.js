@@ -10,7 +10,16 @@ export const createApplication = (req, res) => {
     marital_status,
     date_of_birth
   } = req.body;
+// ✅ Fayida ID validation (backend)
+if (fayida_id) {
+  const isValid = /^[0-9]{12}$/.test(fayida_id);
 
+  if (!isValid) {
+    return res.status(400).json({
+      message: "እባክዎ ትክክለኛ የፋይዳ መታወቂያ ያስገቡ"
+    });
+  }
+}
   const files = req.files;
   // ================= DUPLICATION CHECK =================
   // Step 1: If Fayida ID exists → enforce uniqueness
@@ -75,10 +84,15 @@ export const createApplication = (req, res) => {
         if (err) return res.status(500).json(err);
 
         const applicantId = result.insertId;
-
+const officerId = req.session.user?.id;
+if (!officerId) {
+  return res.status(401).json({
+    message: "እባክዎ ይግቡ (Session expired)"
+  });
+}
         db.query(
-          "INSERT INTO applications (applicant_id,status) VALUES (?,?)",
-          [applicantId, "Pending"],
+          "INSERT INTO applications (applicant_id, status, officer_id) VALUES (?,?,?)",
+          [applicantId, "Pending",officerId],
           (err, result) => {
 
             if (err) return res.status(500).json(err);

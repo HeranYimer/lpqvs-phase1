@@ -40,8 +40,26 @@ router.post("/applications", (req, res) => {
 router.post("/applications/:id/upload", (req, res) => {
   const appId = req.params.id;
 
-  uploadMiddleware(req, res, (err) => {
-    if (err) return res.status(400).json({ message: "Upload error" });
+uploadMiddleware(req, res, (err) => {
+
+  if (err) {
+
+    if (err.message === "INVALID_FILE_TYPE") {
+      return res.status(400).json({
+        message: "የተሳሳተ የፋይል አይነት! PNG, JPG እና PDF ብቻ መጫን ይችላሉ"
+      });
+    }
+
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        message: "ፋይሉ ከ 5MB በላይ መሆን አይችልም"
+      });
+    }
+
+    return res.status(400).json({
+      message: "ፋይል መጫን ስህተት"
+    });
+  }
 
     const files = req.files;
     const docs = [];
@@ -250,14 +268,21 @@ router.get("/applications/:id/documents", (req, res) => {
 router.get("/reports/summary", (req, res) => {
 
   const summaryQuery = `
-    SELECT 
-      COUNT(*) as total,
-      SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending,
-      SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved,
-      SUM(CASE WHEN status = 'Rejected' THEN 1 ELSE 0 END) as rejected
-    FROM applications
-  `;
+  SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending,
+    SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved,
+    SUM(CASE WHEN status = 'Rejected' THEN 1 ELSE 0 END) as rejected,
 
+    -- ✅ ADD THIS (monthly)
+    SUM(CASE 
+      WHEN MONTH(created_at) = MONTH(CURDATE()) 
+      AND YEAR(created_at) = YEAR(CURDATE()) 
+      THEN 1 ELSE 0 
+    END) as monthly
+
+  FROM applications
+`;
   const dailyQuery = `
     SELECT DATE(created_at) as date, COUNT(*) as count
     FROM applications
@@ -457,9 +482,6 @@ router.delete("/applications/:id", requireAdmin, (req, res) => {
 
   // ================= DEBUG LOG =================
   const applicationId = req.params.id;
-  console.log("DELETE HIT:", applicationId);
-  console.log("USER:", req.session.user?.id);
-
   const userId = req.session.user.id;
 
   db.query(
@@ -467,7 +489,6 @@ router.delete("/applications/:id", requireAdmin, (req, res) => {
     [applicationId],
     (err, result) => {
 
-      // ================= የዳታቤዝ ስህተት DEBUG =================
       if (err) {
         console.error("SELECT የዳታቤዝ ስህተት:", err);
         return res.status(500).json({ message: "የዳታቤዝ ስህተት (select)" });
@@ -503,14 +524,15 @@ router.delete("/applications/:id", requireAdmin, (req, res) => {
 
       console.log("Diff Days:", diffDays);
 
-      // 🔥 2 DAYS RULE (ACTIVE)
+   // ================= 2 YEAR RULE =================
+
       // if (diffDays < 2) {
       //   return res.status(403).json({
       //     message: "ይህ ማመልከቻ ከ2 ቀን በታች ስለሆነ ማጥፋት አይቻልም (ሙከራ ህግ)"
       //   });
       // }
 
-      // ================= 10 YEAR RULE (COMMENTED) =================
+      // ================= 10 YEAR RULE =================
       
       const diffYears = diffDays / 365;
 

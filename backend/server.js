@@ -40,7 +40,7 @@ message: "ፋይሉ ከ 5MB በላይ መሆን አይችልም"
 }
 
 res.status(500).json({
-message: "File upload error"
+message: "ፋይል ሰቀላ ስህተት"
 });
 
 });

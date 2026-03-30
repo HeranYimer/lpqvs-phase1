@@ -26,12 +26,10 @@ function showMessage(message, type = "success") {
     messageBox.style.backgroundColor = "#d4edda";
   }
 
-  // clear previous timer
   if (messageTimeout) {
     clearTimeout(messageTimeout);
   }
 
-  // hide after delay
   messageTimeout = setTimeout(() => {
     messageBox.style.opacity = "0";
 
@@ -43,7 +41,7 @@ function showMessage(message, type = "success") {
 
 // ================= UPLOAD HANDLER =================
 document.getElementById("uploadBtn").addEventListener("click", async (e) => {
-  e.preventDefault(); // 🔥 IMPORTANT FIX
+  e.preventDefault();
 
   const appId = document.getElementById("appId").value;
 
@@ -58,6 +56,19 @@ document.getElementById("uploadBtn").addEventListener("click", async (e) => {
   const fayida = document.getElementById("fayida_doc").files[0];
   const kebele = document.getElementById("kebele_doc").files[0];
 
+  // ✅ FILE TYPE VALIDATION (ADDED ONLY THIS PART)
+  const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+
+  const filesToCheck = [sig, fayida, kebele];
+
+  for (let file of filesToCheck) {
+    if (file && !allowedTypes.includes(file.type)) {
+      showMessage("የተሳሳተ የፋይል አይነት! PNG, JPG እና PDF ብቻ መጫን ይችላሉ", "error");
+      return;
+    }
+  }
+
+  // append after validation
   if (sig) formData.append("signature", sig);
   if (fayida) formData.append("fayida_doc", fayida);
   if (kebele) formData.append("kebele_doc", kebele);
@@ -79,6 +90,6 @@ document.getElementById("uploadBtn").addEventListener("click", async (e) => {
       showMessage(data.message || "መጫን አልተሳካም", "error");
     }
   } catch (err) {
-    showMessage("Server error", "error");
+    showMessage("የሰርቨር ስህተት ተከስቷል", "error");
   }
 });

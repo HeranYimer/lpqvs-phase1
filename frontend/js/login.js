@@ -5,15 +5,10 @@ const messageBox = document.getElementById("messageBox");
 
 function showMessage(message, type = "error") {
   messageBox.innerText = message;
+  messageBox.style.display = "block";
 
-  messageBox.style.position = "fixed";
-  messageBox.style.top = "20px";
-  messageBox.style.right = "20px";
-  messageBox.style.zIndex = "9999";
-  messageBox.style.padding = "12px 15px";
-  messageBox.style.borderRadius = "6px";
+  messageBox.style.textAlign = "center";
   messageBox.style.fontWeight = "bold";
-  messageBox.style.minWidth = "250px";
 
   if (type === "error") {
     messageBox.style.background = "#f8d7da";
@@ -28,8 +23,6 @@ function showMessage(message, type = "error") {
   setTimeout(() => {
     messageBox.style.display = "none";
   }, 3000);
-
-  messageBox.style.display = "block";
 }
 document.getElementById("title").innerText = labels.loginTitle;
 document.getElementById("usernameLabel").innerText = labels.username;
